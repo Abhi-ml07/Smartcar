@@ -576,6 +576,13 @@ if st.session_state["ui_theme"] == "dark":
         [data-testid="stMetricValue"], h1, h2, h3, h4, h5, h6, p, label, span {
             color: #F5F5F4 !important;
         }
+        [data-testid="stMarkdownContainer"],
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] li,
+        [data-testid="stMarkdownContainer"] strong,
+        [data-testid="stCaptionContainer"] {
+            color: #F5F5F4 !important;
+        }
         [data-testid="stSidebar"] .stButton > button {
             color: #D6D3D1 !important;
             background: transparent;
@@ -589,6 +596,33 @@ if st.session_state["ui_theme"] == "dark":
             background: #3F3A36 !important;
             color: #CCFBF1 !important;
         }
+        [data-testid="stSidebar"] .stButton > button p,
+        [data-testid="stSidebar"] .stButton > button span,
+        [data-testid="stSidebar"] .stButton > button div {
+            color: inherit !important;
+        }
+        .stButton > button,
+        .stFormSubmitButton > button {
+            color: #F5F5F4 !important;
+        }
+        .stButton > button[kind="secondary"],
+        .stFormSubmitButton > button[kind="secondary"] {
+            background: #292524 !important;
+            color: #F5F5F4 !important;
+            border-color: #57534E !important;
+        }
+        .stButton > button[kind="primary"],
+        .stFormSubmitButton > button[kind="primary"] {
+            color: #FFFFFF !important;
+        }
+        .stButton > button p,
+        .stButton > button span,
+        .stButton > button div,
+        .stFormSubmitButton > button p,
+        .stFormSubmitButton > button span,
+        .stFormSubmitButton > button div {
+            color: inherit !important;
+        }
         [data-testid="stTextInput"] input,
         [data-testid="stNumberInput"] input,
         [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
@@ -599,6 +633,15 @@ if st.session_state["ui_theme"] == "dark":
         [data-testid="stTable"], [data-testid="stDataFrame"] {
             background: #292524 !important;
             border-color: #44403C !important;
+        }
+        [data-testid="stTable"] *, [data-testid="stDataFrame"] *,
+        [role="columnheader"], [role="gridcell"], [role="rowheader"] {
+            color: #F5F5F4 !important;
+        }
+        [data-testid="stAlert"], [data-testid="stAlert"] p,
+        [data-testid="stAlert"] span, [data-testid="stNotification"],
+        [data-testid="stNotification"] p, [data-testid="stNotification"] span {
+            color: #F5F5F4 !important;
         }
         .smartcar-hero {
             background: linear-gradient(120deg, #292524, #1C1917) !important;
