@@ -555,6 +555,78 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+if st.session_state["ui_theme"] == "dark":
+    st.markdown(
+        """
+        <style>
+        .stApp, [data-testid="stAppViewContainer"] {
+            background: #171717 !important;
+            color: #F5F5F4 !important;
+        }
+        [data-testid="stSidebar"], [data-testid="stSidebarContent"] {
+            background: #292524 !important;
+            border-color: #44403C !important;
+        }
+        [data-testid="stMetric"], [data-testid="stTable"], [data-testid="stDataFrame"],
+        [data-testid="stContainer"], [data-testid="stVerticalBlockBorderWrapper"] {
+            background: #292524 !important;
+            border-color: #44403C !important;
+        }
+        [data-testid="stMetricLabel"] { color: #A8A29E !important; }
+        [data-testid="stMetricValue"], h1, h2, h3, h4, h5, h6, p, label, span {
+            color: #F5F5F4 !important;
+        }
+        [data-testid="stSidebar"] .stButton > button {
+            color: #D6D3D1 !important;
+            background: transparent;
+        }
+        [data-testid="stSidebar"] .stButton > button[kind="primary"] {
+            background: #44403C !important;
+            color: #F0FDFA !important;
+            border-color: #57534E !important;
+        }
+        [data-testid="stSidebar"] .stButton > button:hover {
+            background: #3F3A36 !important;
+            color: #CCFBF1 !important;
+        }
+        [data-testid="stTextInput"] input,
+        [data-testid="stNumberInput"] input,
+        [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+            background: #292524 !important;
+            color: #F5F5F4 !important;
+            border-color: #57534E !important;
+        }
+        [data-testid="stTable"], [data-testid="stDataFrame"] {
+            background: #292524 !important;
+            border-color: #44403C !important;
+        }
+        .smartcar-hero {
+            background: linear-gradient(120deg, #292524, #1C1917) !important;
+            border-color: #44403C !important;
+        }
+        .smartcar-hero p { color: #D6D3D1 !important; }
+        .model-selection-card {
+            background: #292524 !important;
+            border-color: #57534E !important;
+            color: #F5F5F4 !important;
+        }
+        .stButton > button, .stFormSubmitButton > button {
+            border-color: #57534E;
+        }
+        [data-testid="stExpander"] {
+            background: #292524;
+            border-color: #44403C;
+        }
+        [data-testid="stExpander"] details,
+        [data-testid="stExpander"] summary {
+            background: #292524 !important;
+            color: #F5F5F4 !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
 
 @st.cache_data(ttl=300)
 def load_data():
@@ -657,7 +729,7 @@ with st.sidebar:
         ("🏠  Home", "Home Dashboard"),
         ("🚙  Search", "Car Price Prediction"),
         ("📊  Analytics", "Data Analytics"),
-        ("⚙️  Settings", "Model Performance"),
+        ("⚙️  Models", "Model Performance"),
     ]
     for label, page_name in nav_items:
         if st.button(label, key=f"nav_{page_name}", use_container_width=True,
@@ -994,8 +1066,8 @@ elif page == "Model Performance":
     selected_name = metadata["selected_model"]
 
     st.markdown(
-        '<div style="background:#F0F7F6;border:1px solid #CCFBF1;border-radius:10px;'
-        'padding:12px 16px;color:#000000;font-size:14px;">'
+        '<div class="model-selection-card" style="background:#F0F7F6;border:1px solid #CCFBF1;border-radius:10px;'
+        'padding:12px 16px;color:#292524;font-size:14px;">'
         f"Selected model: <strong>{selected_name}</strong> — chosen using the lowest mean "
         "validation MAE from 3-fold cross-validation."
         "</div>",
@@ -1033,10 +1105,16 @@ elif page == "Model Performance":
             y="Feature",
             orientation="h",
         )
-        fig.update_layout(template="plotly_white", paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
-                          font_color="#292524")
-        fig.update_xaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
+        if st.session_state["ui_theme"] == "dark":
+            fig.update_layout(template="plotly_dark", paper_bgcolor="#292524", plot_bgcolor="#292524",
+                              font_color="#F5F5F4")
+            fig.update_xaxes(showgrid=True, gridcolor="#57534E", zeroline=False)
+            fig.update_yaxes(showgrid=True, gridcolor="#57534E", zeroline=False)
+        else:
+            fig.update_layout(template="plotly_white", paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
+                              font_color="#292524")
+            fig.update_xaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
+            fig.update_yaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
         st.plotly_chart(fig, use_container_width=True)
 
     actual = np.asarray(metadata["test_actual"])
@@ -1049,17 +1127,29 @@ elif page == "Model Performance":
         line = np.linspace(actual.min(), actual.max(), 100)
         fig.add_scatter(x=line, y=line, mode="lines", name="Ideal prediction",
                         line=dict(color="#22d3ee", dash="dash"))
-        fig.update_layout(template="plotly_white", paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
-                          font_color="#292524")
-        fig.update_xaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
+        if st.session_state["ui_theme"] == "dark":
+            fig.update_layout(template="plotly_dark", paper_bgcolor="#292524", plot_bgcolor="#292524",
+                              font_color="#F5F5F4")
+            fig.update_xaxes(showgrid=True, gridcolor="#57534E", zeroline=False)
+            fig.update_yaxes(showgrid=True, gridcolor="#57534E", zeroline=False)
+        else:
+            fig.update_layout(template="plotly_white", paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
+                              font_color="#292524")
+            fig.update_xaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
+            fig.update_yaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
         st.plotly_chart(fig, use_container_width=True)
     with c2:
         fig = px.histogram(residuals, nbins=40, labels={"value": "Residual"})
-        fig.update_layout(template="plotly_white", paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
-                          font_color="#292524")
-        fig.update_xaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
+        if st.session_state["ui_theme"] == "dark":
+            fig.update_layout(template="plotly_dark", paper_bgcolor="#292524", plot_bgcolor="#292524",
+                              font_color="#F5F5F4")
+            fig.update_xaxes(showgrid=True, gridcolor="#57534E", zeroline=False)
+            fig.update_yaxes(showgrid=True, gridcolor="#57534E", zeroline=False)
+        else:
+            fig.update_layout(template="plotly_white", paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
+                              font_color="#292524")
+            fig.update_xaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
+            fig.update_yaxes(showgrid=True, gridcolor="#E7E5E4", zeroline=False)
         st.plotly_chart(fig, use_container_width=True)
 
     with st.expander("Metric explanations"):
