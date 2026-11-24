@@ -542,6 +542,15 @@ st.markdown(
     .luxury-price-card .label { color: #F5F5F4; font-size: 0.95rem; }
     .luxury-price-card .value { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.04em;
         animation: priceReveal 0.8s ease-out both; }
+    .prediction-complete {
+        background: #ECFDF5;
+        border: 1px solid #A7F3D0;
+        border-radius: 10px;
+        color: #065F46;
+        padding: 10px 14px;
+        margin: 8px 0;
+        font-weight: 600;
+    }
     @keyframes priceReveal {
         from { opacity: 0; transform: translateY(12px) scale(0.96); }
         to { opacity: 1; transform: translateY(0) scale(1); }
@@ -601,6 +610,11 @@ if st.session_state["ui_theme"] == "dark":
         [data-testid="stSidebar"] .stButton > button div {
             color: inherit !important;
         }
+        .prediction-complete {
+            background: #064E3B !important;
+            border-color: #047857 !important;
+            color: #ECFDF5 !important;
+        }
         .stButton > button,
         .stFormSubmitButton > button {
             color: #F5F5F4 !important;
@@ -614,6 +628,24 @@ if st.session_state["ui_theme"] == "dark":
         .stButton > button[kind="primary"],
         .stFormSubmitButton > button[kind="primary"] {
             color: #FFFFFF !important;
+        }
+        [data-testid="stDownloadButton"] button {
+            background: #B45309 !important;
+            color: #FFFFFF !important;
+            border: 1px solid #D97706 !important;
+        }
+        [data-testid="stDownloadButton"] button p,
+        [data-testid="stDownloadButton"] button span,
+        [data-testid="stDownloadButton"] button div {
+            color: #FFFFFF !important;
+        }
+        [data-testid="stFormSubmitButton"] button {
+            color: #F5F5F4 !important;
+        }
+        [data-testid="stFormSubmitButton"] button[kind="secondary"] {
+            background: #292524 !important;
+            color: #F5F5F4 !important;
+            border-color: #57534E !important;
         }
         .stButton > button p,
         .stButton > button span,
@@ -993,7 +1025,12 @@ elif page == "Car Price Prediction":
             with st.spinner("CatBoost is analyzing your vehicle..."):
                 time.sleep(0.35)
                 prediction, returned_metadata = predict_price(values)
-            st.success("Prediction completed from the trained machine learning model.")
+            st.markdown(
+                '<div class="prediction-complete">'
+                "Prediction completed from the trained machine learning model."
+                "</div>",
+                unsafe_allow_html=True,
+            )
             st.caption(
                 "The estimate includes dataset-derived depreciation: older age and higher kilometers reduce the price."
             )
@@ -1035,6 +1072,7 @@ elif page == "Car Price Prediction":
                 file_name="smartcar_valuation_report.csv",
                 mime="text/csv",
                 use_container_width=True,
+                type="primary",
             )
 
             if st.button("Add Vehicle to Comparison", use_container_width=True):
