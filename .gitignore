@@ -1,7 +1,25 @@
-.venv/
+# Python
 __pycache__/
-.ipynb_checkpoints/
 *.py[cod]
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
 .env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Streamlit
 .streamlit/secrets.toml
+
+# IDE
+.vscode/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
