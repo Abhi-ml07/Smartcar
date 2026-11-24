@@ -502,6 +502,53 @@ st.markdown(
         border-radius: 10px !important;
         border-color: #D6D3D1 !important;
     }
+    .st-key-prediction_form [data-testid="stForm"] {
+        background: transparent;
+        border: 1px solid #E7E5E4;
+        border-radius: 14px;
+        padding: 18px;
+        overflow: visible;
+    }
+    .st-key-prediction_form [data-testid="stSelectbox"] label,
+    .st-key-prediction_form [data-testid="stNumberInput"] label {
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.25;
+        min-height: 18px;
+        margin-bottom: 4px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+    .st-key-prediction_form [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+    .st-key-prediction_form [data-testid="stNumberInput"] {
+        min-height: 46px;
+        height: 46px;
+        border-radius: 10px !important;
+    }
+    .st-key-prediction_form [data-testid="stNumberInput"] input {
+        min-height: 44px;
+        height: 44px;
+        border-radius: 10px 0 0 10px !important;
+    }
+    .st-key-prediction_form [data-testid="stNumberInput"] button {
+        min-width: 36px;
+        width: 36px;
+        height: 44px;
+        border-radius: 8px;
+    }
+    .st-key-predict_prediction_price button {
+        background: #0F766E !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        min-height: 46px;
+        height: 46px;
+        border-radius: 10px;
+        transition: background-color 160ms ease, box-shadow 160ms ease;
+    }
+    .st-key-predict_prediction_price button:hover {
+        background: #115E59 !important;
+        box-shadow: 0 4px 12px rgba(15, 118, 110, 0.22);
+    }
     [data-testid="stTable"], [data-testid="stDataFrame"] {
         border: 1px solid #E7E5E4;
         border-radius: 12px;
@@ -555,6 +602,9 @@ st.markdown(
         background: #C2183A !important;
         color: #FFFFFF !important;
         border: none !important;
+        min-height: 46px;
+        height: 46px;
+        border-radius: 10px;
         transition: background-color 160ms ease, box-shadow 160ms ease;
     }
     .st-key-reset_prediction_form button:hover {
@@ -574,6 +624,20 @@ st.markdown(
     @media (max-width: 700px) {
         .luxury-price-card .value { font-size: 1.65rem; }
         [data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
+        [data-testid="stMainBlockContainer"] { padding-left: 1rem; padding-right: 1rem; }
+        .st-key-prediction_form [data-testid="stForm"] { padding: 12px; }
+        .st-key-prediction_form [data-testid="stHorizontalBlock"] {
+            flex-direction: column;
+            gap: 12px !important;
+        }
+        .st-key-prediction_form [data-testid="stColumn"] {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+        .st-key-prediction_form [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+        .st-key-prediction_form [data-testid="stNumberInput"] {
+            width: 100%;
+        }
     }
     </style>
     """,
@@ -631,6 +695,10 @@ if st.session_state["ui_theme"] == "dark":
             border-color: #047857 !important;
             color: #ECFDF5 !important;
         }
+        .st-key-prediction_form [data-testid="stForm"] {
+            background: #292524 !important;
+            border-color: #44403C !important;
+        }
         .stButton > button,
         .stFormSubmitButton > button {
             color: #F5F5F4 !important;
@@ -663,10 +731,25 @@ if st.session_state["ui_theme"] == "dark":
             color: #F5F5F4 !important;
             border-color: #57534E !important;
         }
+        .st-key-predict_prediction_price button {
+            background: #0F766E !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            min-height: 46px;
+            height: 46px;
+            border-radius: 10px;
+        }
+        .st-key-predict_prediction_price button:hover {
+            background: #115E59 !important;
+            color: #FFFFFF !important;
+        }
         .st-key-reset_prediction_form button {
             background: #C2183A !important;
             color: #FFFFFF !important;
             border: none !important;
+            min-height: 46px;
+            height: 46px;
+            border-radius: 10px;
             transition: background-color 160ms ease, box-shadow 160ms ease;
         }
         .st-key-reset_prediction_form button:hover {
@@ -963,7 +1046,7 @@ elif page == "Car Price Prediction":
     selected_car_name = None
 
     st.caption("Select the brand and the exact car model.")
-    brand_car, model_car = st.columns([1, 1])
+    brand_car, model_car = st.columns(2, gap="medium")
 
     if brand_feature:
         brand_choices = sorted(str(v) for v in clean_df[brand_feature].dropna().unique())
@@ -1000,21 +1083,45 @@ elif page == "Car Price Prediction":
     st.caption("Complete the specifications below. Values outside the dataset range are rejected.")
     with st.form("prediction_form", clear_on_submit=False):
         values = {}
-        columns = st.columns(2)
-        for index, feature in enumerate(features):
-            if feature == brand_feature and selected_brand:
-                values[feature] = selected_brand
-                continue
-            if feature == car_name_feature and selected_car_name:
-                values[feature] = selected_car_name
-                continue
-            col = columns[index % 2]
-            label = str(feature).replace("_", " ").title()
+
+        def find_feature(keywords):
+            for feature in features:
+                normalized_feature = "".join(ch for ch in str(feature).lower() if ch.isalnum())
+                if any("".join(ch for ch in str(keyword).lower() if ch.isalnum()) in normalized_feature for keyword in keywords):
+                    return feature
+            return None
+
+        ordered_features = []
+        field_pairs = (
+            (find_feature(("year", "vehicleage", "make_year")), "Year"),
+            (find_feature(("km_driven", "kilometer", "odometer", "km")), "KM Driven"),
+            (find_feature(("fuel", "fuel_type")), "Fuel"),
+            (find_feature(("transmission", "gear")), "Transmission"),
+            (find_feature(("seller_type", "owner")), "Seller Type"),
+            (find_feature(("mileage",)), "Mileage"),
+            (find_feature(("engine", "engine_capacity", "displacement")), "Engine"),
+            (find_feature(("max_power", "power", "bhp")), "Max Power"),
+            (find_feature(("seats", "seat")), "Seats"),
+        )
+
+        for feature, _ in field_pairs:
+            if feature and feature not in ordered_features:
+                ordered_features.append(feature)
+        for feature in features:
+            if feature not in ordered_features:
+                ordered_features.append(feature)
+
+        def render_field(feature, label, column):
+            label = str(label)
             if feature in categories:
                 choices = categories[feature]
                 if not choices:
                     choices = ["Unknown"]
-                values[feature] = col.selectbox(label, choices)
+                values[feature] = column.selectbox(
+                    label,
+                    choices,
+                    key=f"prediction_{feature}",
+                )
             else:
                 bounds = ranges.get(feature)
                 numeric = pd.to_numeric(clean_df[feature], errors="coerce") if feature in clean_df.columns else pd.Series(dtype=float)
@@ -1027,16 +1134,41 @@ elif page == "Car Price Prediction":
                 if float(lo) == float(hi):
                     hi = lo + 1
                 step = max((hi - lo) / 100, 0.1)
-                values[feature] = col.number_input(
+                values[feature] = column.number_input(
                     label,
                     min_value=float(lo),
                     max_value=float(hi),
                     value=float(default),
                     step=float(step),
+                    key=f"prediction_{feature}",
                 )
 
-        button_col1, button_col2 = st.columns([1, 1])
-        submitted = button_col1.form_submit_button("Predict Price", type="primary")
+        if brand_feature and selected_brand:
+            values[brand_feature] = selected_brand
+        if car_name_feature and selected_car_name:
+            values[car_name_feature] = selected_car_name
+
+        for index in range(0, len(field_pairs), 2):
+            left_feature, left_label = field_pairs[index]
+            right_feature = field_pairs[index + 1][0] if index + 1 < len(field_pairs) else None
+            right_label = field_pairs[index + 1][1] if index + 1 < len(field_pairs) else None
+            left_col, right_col = st.columns(2, gap="medium")
+            if left_feature:
+                render_field(left_feature, left_label, left_col)
+            if right_feature:
+                render_field(right_feature, right_label, right_col)
+
+        for feature in ordered_features:
+            if feature not in {pair_feature for pair_feature, _ in field_pairs if pair_feature}:
+                extra_col1, extra_col2 = st.columns(2, gap="medium")
+                render_field(feature, str(feature).replace("_", " ").title(), extra_col1)
+
+        button_col1, button_col2 = st.columns(2, gap="medium")
+        submitted = button_col1.form_submit_button(
+            "Predict Price",
+            type="primary",
+            key="predict_prediction_price",
+        )
         reset = button_col2.form_submit_button(
             "Reset Form",
             key="reset_prediction_form",
