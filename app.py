@@ -551,6 +551,22 @@ st.markdown(
         margin: 8px 0;
         font-weight: 600;
     }
+    .st-key-reset_prediction_form button {
+        background: #C2183A !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        transition: background-color 160ms ease, box-shadow 160ms ease;
+    }
+    .st-key-reset_prediction_form button:hover {
+        background: #9F1239 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(159, 18, 57, 0.24);
+    }
+    .st-key-reset_prediction_form button p,
+    .st-key-reset_prediction_form button span,
+    .st-key-reset_prediction_form button div {
+        color: #FFFFFF !important;
+    }
     @keyframes priceReveal {
         from { opacity: 0; transform: translateY(12px) scale(0.96); }
         to { opacity: 1; transform: translateY(0) scale(1); }
@@ -646,6 +662,22 @@ if st.session_state["ui_theme"] == "dark":
             background: #292524 !important;
             color: #F5F5F4 !important;
             border-color: #57534E !important;
+        }
+        .st-key-reset_prediction_form button {
+            background: #C2183A !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            transition: background-color 160ms ease, box-shadow 160ms ease;
+        }
+        .st-key-reset_prediction_form button:hover {
+            background: #9F1239 !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 12px rgba(159, 18, 57, 0.24);
+        }
+        .st-key-reset_prediction_form button p,
+        .st-key-reset_prediction_form button span,
+        .st-key-reset_prediction_form button div {
+            color: #FFFFFF !important;
         }
         .stButton > button p,
         .stButton > button span,
@@ -1005,7 +1037,11 @@ elif page == "Car Price Prediction":
 
         button_col1, button_col2 = st.columns([1, 1])
         submitted = button_col1.form_submit_button("Predict Price", type="primary")
-        reset = button_col2.form_submit_button("Reset Form")
+        reset = button_col2.form_submit_button(
+            "Reset Form",
+            key="reset_prediction_form",
+            type="secondary",
+        )
 
     if reset:
         st.session_state.pop("selected_brand", None)
